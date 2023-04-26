@@ -1,2 +1,2 @@
-# pdf-tools
-PDF tools web app, written in Python
+# PDF Tools
+PDF tools web app, written in Python, running in the browser with [PyScript](https://pyscript.net/)
