@@ -1,0 +1,4 @@
+name = "PDF Tools"
+author_name = "Marco Bonifacio"
+author_email = "bonifacio.marco@gmail.com"
+packages = ["pypdf"]
