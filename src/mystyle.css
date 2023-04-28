@@ -29,18 +29,18 @@ p {
   font-size: 1.5vh;
 }
 
+a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
 .navbar {
   display: flex;
   flex-direction: row;
   align-items: baseline;
-  padding: 0.5vh 1vw;
+  padding: 0.5vh 3vw;
   height: 6vh;
-}
-
-.navbar > a {
-  text-decoration: none;
-  color: black;
-  cursor: pointer;
 }
 
 .menu {
@@ -52,10 +52,8 @@ p {
 }
 
 .menu > a {
-  padding: 1vh 2.5vw;
-  text-decoration: none;
-  color: black;
   text-align: center;
+  padding: 0.5vh 1.5vw;
 }
 
 .menu > a:hover {
@@ -65,6 +63,7 @@ p {
 
 .menu > i {
   display: none;
+  padding: 1vh 0;
 }
 
 .menu > i:hover {
@@ -89,51 +88,71 @@ p {
   position: fixed;
   background-color: white;
   top: 25vh;
-  left: 10vw;
-  width: 80vw;
+  left: 50%;
+  width: 80vh;
   height: 50vh;
+  transform: translateX(-50%);
+  padding: 1%;
+  gap: 2%;
 }
 
 .card {
   display: flex;
   flex-direction: column;
   text-align: center;
-  width: 30vh;
-  height: 30vh;
+  width: 30%;
+  height: 45%;
   padding: 2vh 1vw;
   border-radius: 1vmax;
 }
 
-.card > i {
+.card > a {
+  height: 100%;
+  border-radius: 1vmax;
+}
+
+.card > a:hover {
+  color: crimson;
+  box-shadow: 0 0.2vh 0.4vh 0 rgba(0, 0, 0, 0.2), 0 0.4vh 1vh 0 rgba(0, 0, 0, 0.1);
+}
+
+.card i {
   position: relative;
-  top: 4vh;
+  top: 20%;
 }
 
-
-.card > h3 {
+.card h3 {
   position: relative;
-  top: 10vh;
+  top: 30%;
 }
 
-.card > p {
+.card p {
   position: relative;
-  top: 10vh;
+  top: 35%;
 }
 
-.card.merge {
-  background-color: lightcoral;
+.merge {
+  background-color: lightpink;
 }
 
-.card.split {
+.split {
   background-color: lightblue;
 }
 
-.card.compress {
-  background-color: lightgoldenrodyellow;
+.organize {
+  background-color: khaki;
 }
 
-.card.convert {
+.edit {
+  background-color: gainsboro;
+}
+
+.optimize {
   background-color: lavender;
+}
+
+.extract {
+  background-color: moccasin;
 }
 
 .footer {
@@ -144,7 +163,7 @@ p {
   justify-content: flex-end;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 1000px) {
   .navbar {
     justify-content: space-between;
     padding: 0.5vh 3vw;
@@ -154,29 +173,61 @@ p {
   }
   .menu > i {
     display: block;
-    margin-bottom: 2vh;
-    padding: 0 1.5vw;
+    z-index: 2;
   }
   .menu.responsive {
     flex-direction: column;
-    position: fixed;
-    top: 3.8vh;
-    right: 1vw;
+    position: relative;
+    top: 0;
+    right: 0;
+    width: 15vh;
     align-items: flex-end;
+    justify-content: flex-end;
+    z-index: 1;
+    background-color: white;
+    box-shadow: 0 0.2vh 0.4vh 0 rgba(0, 0, 0, 0.2), 0 0.4vh 1vh 0 rgba(0, 0, 0, 0.1);
   }
   .menu.responsive > a {
     display: block;
     text-align: right;
-    width: 25vw;
-    padding: 0.5vh 3vw;
+    padding: 0.25vh 3vw;
     background-color: white;
   }
-  .card {
-    height: 8vh;
-    flex-direction: row;
-    align-items: baseline;
+  .menu.responsive > a:nth-child(2) {
+    padding: 2vh 3vw 0.25vw 3vw;
   }
-  .card > p {
+  .main {
+    width: 50vw;
+    height: 60vh;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5vh 0;
+  }
+  .card {
+    height: 15%;
+    width: 90%;
+    flex-direction: column;
+    padding: 0;
+  }
+  .card > a {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  .card i {
+    min-width: 45%;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+  }
+  .card h3 {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .card p {
     display: none;
   }
 }
