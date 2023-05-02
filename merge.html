@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PDF Tools</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.03.1/pyscript.css" />
+    <link rel="stylesheet" href="src/mystyle.css" />
+    <link rel="stylesheet" 
+      href="https://fonts.googleapis.com/css2?family=Bruno+Ace&family=Roboto" />
+    <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
+    <script src="https://kit.fontawesome.com/38c5c2c5dc.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="#home">
+        <h1>PDF Tools</h1>
+      </a>
+      <div class="menu" id="top-menu">
+        <i class="fa-solid fa-bars fa-lg" py-click="show_menu()" />
+        <a href="#merge">Merge</a>
+        <a href="#split">Split</a>
+        <a href="#organize">Organize</a>
+        <a href="#edit">Edit</a>
+        <a href="#optimize">Optimize</a>
+        <a href="#extract">Extract</a>
+      </div>
+    </div>
+    <div class="canvas">
+      <h2>Merge PDF files</h2>
+      <p>Merge two or more PDF files in any order</p>
+      <label class="select merge">Select PDF files<input type="file" accept=".pdf" multiple />
+      </label>
+    <py-script src="src/main.py" />
+    <py-config src="src/pyscript.toml" />
+  </body>
+</html>

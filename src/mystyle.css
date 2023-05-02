@@ -29,10 +29,20 @@ p {
   font-size: 1.5vh;
 }
 
+label {
+  margin: 0;
+  height: 0;
+  font-size: 2.5vh;
+}
+
 a {
   text-decoration: none;
   color: black;
   cursor: pointer;
+}
+
+input[type="file"] {
+  opacity: 0;
 }
 
 .navbar {
@@ -161,6 +171,26 @@ a {
   height: 65vh;
   flex-direction: column;
   justify-content: flex-end;
+}
+
+.canvas {
+  display: flex;
+  flex-direction: column;
+  background-color: linen;
+  align-items: center;
+  height: 94vh;
+  padding: 5vh 0;
+}
+
+.select {
+  position: relative;
+  top: 20%;
+  width: 60%;
+  height: 10%;
+  border-radius: 1vmax;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 2.5vh;
 }
 
 @media (max-width: 1000px) {
