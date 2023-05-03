@@ -5,6 +5,7 @@
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
+  overflow: hidden;
 }
 
 h1 {
@@ -112,7 +113,6 @@ input[type="file"] {
   text-align: center;
   width: 30%;
   height: 45%;
-  padding: 2vh 1vw;
   border-radius: 1vmax;
 }
 
@@ -139,6 +139,7 @@ input[type="file"] {
 .card p {
   position: relative;
   top: 35%;
+  padding: 1vh 1vh;
 }
 
 .merge {
@@ -165,12 +166,31 @@ input[type="file"] {
   background-color: moccasin;
 }
 
+.middle {
+  display: flex;
+  background-color: linen;
+  height: 60vh;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
 .footer {
   display: flex;
   background-color: linen;
-  height: 65vh;
+  height: 4vh;
   flex-direction: column;
   justify-content: flex-end;
+}
+
+.footer p {
+  position: relative;
+  bottom: 100%;
+  right: 2%;
+  text-align: right;
+}
+
+.footer a {
+  color: crimson;
 }
 
 .canvas {
@@ -178,8 +198,26 @@ input[type="file"] {
   flex-direction: column;
   background-color: linen;
   align-items: center;
-  height: 94vh;
+  height: 90vh;
   padding: 5vh 0;
+}
+
+.action {
+  position: relative;
+  top: 90%;
+  width: 20vh;
+  height: 5vh;
+  border-radius: 1vmax;
+  border: none;
+  text-align: center;
+  font-weight: bold;
+  visibility: hidden;
+}
+
+.action:hover {
+  cursor: pointer;
+  box-shadow: 0 0.2vh 0.8vh darkgray;
+  color: crimson;
 }
 
 .select {

@@ -4,21 +4,21 @@
     <title>PDF Tools</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="https://pyscript.net/releases/2023.0.3.1/pyscript.css" />
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <link rel="stylesheet" href="src/mystyle.css" />
     <link rel="stylesheet" 
       href="https://fonts.googleapis.com/css2?family=Bruno+Ace&family=Roboto" />
-    <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://kit.fontawesome.com/38c5c2c5dc.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <div class="navbar">
-      <a href="#home">
+      <a href="index.html">
         <h1>PDF Tools</h1>
       </a>
       <div class="menu" id="top-menu">
         <i class="fa-solid fa-bars fa-lg" py-click="show_menu()"></i>
-        <a href="#merge">Merge</a>
+        <a href="merge.html">Merge</a>
         <a href="#split">Split</a>
         <a href="#organize">Organize</a>
         <a href="#edit">Edit</a>
@@ -27,12 +27,20 @@
       </div>
     </div>
     <div class="canvas" id="target">
-      <h2>Merge PDF files</h2>
-      <p>Merge two or more PDF files in any order</p>
-      <label class="select merge">Select PDF files
+      <h2 id="title">Merge PDF files</h2>
+      <p id="description">Merge two or more PDF files in any order</p>
+      <label class="select merge" id="select-container">Select PDF files
         <input type="file" accept=".pdf" id="selector" multiple />
       </label>
-    <py-script src="src/main.py" />
+      <button class="action merge" id="action-button">Merge!</button>
+    </div>
+    <div class="footer">
+      <p>Powered by 
+        <a href="https://pyscript.net">PyScript</a> and 
+        <a href="https://pypdf.readthedocs.io/en/latest/">pypdf</a>
+      </p>
+    </div>
+    <py-script src="src/merge.py" />
     <py-config src="src/pyscript.toml" />
   </body>
 </html>

@@ -13,7 +13,7 @@
   </head>
   <body>
     <div class="navbar">
-      <a href="#home">
+      <a href="index.html">
         <h1>PDF Tools</h1>
       </a>
       <div class="menu" id="top-menu">
@@ -30,7 +30,13 @@
       <h2>Tools to manipulate PDF files</h2>
       <p>Merge, split, organize, edit and optimize any PDF file.</p>
     </div>
-    <div class="footer"></div>
+    <div class="middle"></div>
+    <div class="footer">
+      <p>Powered by 
+        <a href="https://pyscript.net">PyScript</a> and 
+        <a href="https://pypdf.readthedocs.io/en/latest/">pypdf</a>
+      </p>
+    </div>
     <div class="main">
       <div class="card merge">
         <a href="merge.html">
@@ -75,7 +81,7 @@
         </a>
       </div>
     </div>
-    <py-script src="src/main.py" />
+    <py-script src="src/index.py" />
     <py-config src="src/pyscript.toml" />
   </body>
 </html>
