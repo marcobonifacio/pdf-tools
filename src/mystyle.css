@@ -198,7 +198,7 @@ input[type="file"] {
   flex-direction: column;
   background-color: linen;
   align-items: center;
-  height: 90vh;
+  height: 80vh;
   padding: 5vh 0;
 }
 
@@ -213,9 +213,18 @@ input[type="file"] {
   font-size: 1.5vh;
 }
 
+.controls {
+  display: flex;
+  background-color: linen;
+  height: 10vh;
+  flex-direction: row;
+  justify-content: center;
+  gap: 3vh;
+}
+
 .action {
   position: relative;
-  top: 90%;
+  top: 5%;
   width: 20vh;
   height: 5vh;
   border-radius: 1vmax;
@@ -225,10 +234,23 @@ input[type="file"] {
   visibility: hidden;
 }
 
-.action:hover {
+.action:hover, .add:hover {
   cursor: pointer;
   box-shadow: 0 0.2vh 0.8vh darkgray;
   color: crimson;
+}
+
+.add {
+  position: relative;
+  top: 5%;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 50%;
+  border: none;
+  text-align: center;
+  font-weight: bold;
+  visibility: hidden;
+  padding-top: 0.75vh;
 }
 
 .select {
