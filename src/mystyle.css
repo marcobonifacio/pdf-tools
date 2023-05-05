@@ -203,7 +203,7 @@ input[type="file"] {
 }
 
 .canvas div {
-  padding: 0.5vh;
+  padding: 0.25vh;
   margin: 0.5vh;
   width: 60%;
   height: 4%;
@@ -225,7 +225,7 @@ input[type="file"] {
 .action {
   position: relative;
   top: 5%;
-  width: 20vh;
+  width: 30vh;
   height: 5vh;
   border-radius: 1vmax;
   border: none;
@@ -250,7 +250,7 @@ input[type="file"] {
   text-align: center;
   font-weight: bold;
   visibility: hidden;
-  padding-top: 0.75vh;
+  padding: 0.6vh;
 }
 
 .select {

@@ -34,17 +34,18 @@
       </label>
     </div>
     <div class="controls">
-      <label class="add merge">
+      <label class="add merge" id="add-container">
         <i class="fa-solid fa-plus"></i>
         <input type="file" accept=".pdf" id="add-selector" multiple />
       </label>
-      <button class="action merge" id="action-button">Merge!</button>
+      <button class="action merge" id="action-button">Merge and download!</button>
     </div>
     <div class="footer">
       <p>Powered by 
         <a href="https://pyscript.net">PyScript</a> and 
         <a href="https://pypdf.readthedocs.io/en/latest/">pypdf</a>
       </p>
+      <div id="templink"></div>
     </div>
     <py-script src="src/merge.py" />
     <py-config src="src/pyscript.toml" />
