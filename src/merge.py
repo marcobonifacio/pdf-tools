@@ -1,4 +1,3 @@
-import asyncio
 import io
 import js
 from pyscript import Element
@@ -27,6 +26,20 @@ def modify_canvas():
                        'click', pdf_merge.merge_files)
 
 
+def modify_canvas_again():
+    for child in js.document.getElementById('target').children:
+        child.style.display = 'none'
+    js.document.getElementById('add-container').style.display = 'none'
+    js.document.getElementById('action-button').style.display = 'none'
+    p = js.document.createElement('p')
+    p.innerHTML = 'Your PDF file is ready to download!'
+    js.document.getElementById('target').appendChild(p)
+    link = js.document.createElement('a')
+    link.innerHTML = 'Download PDF'
+    link.classList.add('merge')
+    js.document.getElementById('target').appendChild(link)
+
+
 class PdfMerge:
 
     def __init__(self):
@@ -44,12 +57,17 @@ class PdfMerge:
             self.files.append(f)
             Element('target').write(f.name, append=True)
     
-    async def merge_files(self, evt):
+    def read_files(self):
         for f in self.files:
             reader = js.FileReader.new()
             reader.onload = create_proxy(self.write_pdf)
             reader.readAsArrayBuffer(f)
-        await asyncio.sleep(2)
+    
+    def merge_files(self, evt):
+        self.read_files()
+        modify_canvas_again()
+    
+    def remainder(self):
         output = io.BytesIO()
         self.merger.write(output)
         self.merger.close()
