@@ -35,9 +35,13 @@ def modify_canvas_again():
     p.innerHTML = 'Your PDF file is ready to download!'
     js.document.getElementById('target').appendChild(p)
     link = js.document.createElement('a')
+    link.id = 'pdf-download'
     link.innerHTML = 'Download PDF'
     link.classList.add('merge')
+    link.setAttribute('download', 'merged_pdf.pdf')
     js.document.getElementById('target').appendChild(link)
+    add_event_listener(js.document.getElementById('pdf-download'),
+                       'click', pdf_merge.download_merged)
 
 
 class PdfMerge:
@@ -67,7 +71,7 @@ class PdfMerge:
         self.read_files()
         modify_canvas_again()
     
-    def remainder(self):
+    def download_merged(self, evt):
         output = io.BytesIO()
         self.merger.write(output)
         self.merger.close()
@@ -75,14 +79,8 @@ class PdfMerge:
         content = to_js(output.read())
         blob = js.Blob.new([content], {type: "application/pdf"})
         blob_url = js.window.URL.createObjectURL(blob)
-        templink = js.document.createElement('a')
-        templink.style.display = 'none'
-        templink.href = blob_url
-        templink.setAttribute('download', 'merged_pdf.pdf')
-        js.document.body.appendChild(templink)
-        templink.click()
-        js.document.body.removeChild(templink)
-        js.window.URL.revokeObjectURL(blob_url)
+        link = js.document.getElementById('pdf-download')
+        link.href = blob_url
     
 
 def setup():
