@@ -245,7 +245,11 @@ input[type="file"] {
   visibility: hidden;
 }
 
-.action:hover, .add:hover {
+.action[enabled] {
+  color: black;
+}
+
+.action[enabled]:hover, .add:hover {
   cursor: pointer;
   box-shadow: 0 0.2vh 0.8vh darkgray;
   color: crimson;
@@ -261,7 +265,6 @@ input[type="file"] {
   text-align: center;
   font-weight: bold;
   visibility: hidden;
-  padding: 0.6vh;
 }
 
 .select {
@@ -270,15 +273,20 @@ input[type="file"] {
   width: 35vh;
   height: 10vh;
   border-radius: 1vmax;
+  border: none;
   text-align: center;
   font-weight: bold;
-  padding-top: 3vh;
+  font-size: 2vh;
 }
 
 .select:hover {
   cursor: pointer;
   box-shadow: 0 0.2vh 0.8vh darkgray;
   color: crimson;
+}
+
+.dragging {
+  box-shadow: inset 4vw 4vh 24vw 36vh darkgray;
 }
 
 @media (max-width: 1000px) {
