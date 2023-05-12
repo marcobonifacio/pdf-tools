@@ -28,6 +28,7 @@ def drag_leave(evt):
 def modify_canvas():
     js.document.getElementById('title').style.display = 'none'
     js.document.getElementById('description').style.display = 'none'
+    js.document.getElementById('dragndrop').style.display = 'none'
     js.document.getElementById('selector').style.display = 'none'
     js.document.getElementById('action-button').style.visibility = 'visible'
     js.document.getElementById('add-selector').style.visibility = 'visible'
