@@ -29,15 +29,13 @@
     <div class="canvas" id="target">
       <h2 id="title">Merge PDF files</h2>
       <p id="description">Merge two or more PDF files in any order</p>
-      <label class="select merge" id="select-container">Select PDF files
-        <input type="file" accept=".pdf" id="selector" multiple />
-      </label>
+      <button class="select merge" id="selector">Select PDF files</button>
+      <p id= "dragndrop" style="position: relative; top: 25%;">(or drag and drop them here)</p>
     </div>
     <div class="controls">
-      <label class="add merge" id="add-container">
+      <button class="add merge" id="add-selector">
         <i class="fa-solid fa-plus"></i>
-        <input type="file" accept=".pdf" id="add-selector" multiple />
-      </label>
+      </button>
       <button class="action merge" id="action-button">Merge and download!</button>
     </div>
     <div class="footer">
