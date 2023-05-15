@@ -17,12 +17,33 @@ def show_menu():
 
 def drag_enter(evt):
     evt.preventDefault()
-    js.document.getElementById('target').classList.add('dragging')
+    js.document.getElementById('div-drag').style.display = 'flex'
+
+
+def drag_over(evt):
+    evt.preventDefault()
+    if js.document.getElementById('div-drag').style.display == 'none':
+        js.document.getElementById('div-drag').style.display = 'flex'
 
 
 def drag_leave(evt):
     evt.preventDefault()
-    js.document.getElementById('target').classList.remove('dragging')
+    js.document.getElementById('div-drag').style.display = 'none'
+
+
+def show_tooltip(evt):
+    tt = js.document.createElement('div')
+    tt.id = 'tooltip'
+    tt.style.position = 'absolute'
+    tt.style.top = f'{evt.pageY}px'
+    tt.style.left = f'{evt.pageX}px'
+    tt.innerHTML = evt.target.innerHTML
+    js.document.body.appendChild(tt)
+
+
+def hide_tooltip(evt):
+    tt = js.document.getElementById('tooltip')
+    js.document.body.removeChild(tt)
 
 
 def modify_canvas():
@@ -32,6 +53,7 @@ def modify_canvas():
     js.document.getElementById('select-container').style.display = 'none'
     js.document.getElementById('action-button').style.visibility = 'visible'
     js.document.getElementById('add-container').style.visibility = 'visible'
+    js.document.getElementById('target').classList.add('files')
     add_event_listener(js.document.getElementById('add-selector'),
                        'change', pdf_merge.select_files)
     add_event_listener(js.document.getElementById('action-button'),
@@ -43,6 +65,7 @@ def modify_canvas_again():
         child.style.display = 'none'
     js.document.getElementById('add-container').style.display = 'none'
     js.document.getElementById('action-button').style.display = 'none'
+    js.document.getElementById('target').classList.remove('files')
     p = js.document.createElement('p')
     p.innerHTML = 'Your PDF file is ready to download!'
     js.document.getElementById('target').appendChild(p)
@@ -71,7 +94,13 @@ class PdfMerge:
         filelist = evt.target.files
         for f in filelist:
             self.files.append(f)
-            Element('target').write(f.name, append=True)
+            el = js.document.createElement('div')
+            el.innerHTML = f.name
+            el.classList.add('pdf')
+            js.document.getElementById('target').appendChild(el)
+            add_event_listener(el, 'mouseenter', show_tooltip)
+            add_event_listener(el, 'mouseleave', hide_tooltip)
+        evt.target.value = ''
         if len(self.files) < 2:
             (js.document.getElementById('action-button').
              setAttribute('disabled', True))
@@ -80,15 +109,18 @@ class PdfMerge:
              removeAttribute('disabled'))
     
     def drop_files(self, evt):
-        js.document.getElementById('target').classList.remove('dragging')
+        js.document.getElementById('div-drag').style.display = 'none'
         evt.preventDefault()
-        if js.document.getElementById('selector').style.display != 'none':
+        if len(self.files) == 0:
             modify_canvas()
         for i in evt.dataTransfer.items:
             if i.kind == 'file':
                 f = i.getAsFile()
                 self.files.append(f)
-                Element('target').write(f.name, append=True)
+                el = js.document.createElement('div')
+                el.innerHTML = f.name
+                el.classList.add('pdf')
+                js.document.getElementById('target').appendChild(el)
         if len(self.files) < 2:
             (js.document.getElementById('action-button').
              setAttribute('disabled', True))
@@ -123,11 +155,11 @@ def setup():
                        'change', pdf_merge.select_files)
     add_event_listener(js.document.getElementById('target'),
                        'dragenter', drag_enter)
-    add_event_listener(js.document.getElementById('target'),
-                       'dragover', drag_enter)
-    add_event_listener(js.document.getElementById('target'),
+    add_event_listener(js.document.getElementById('div-drag'),
+                       'dragover', drag_over)
+    add_event_listener(js.document.getElementById('div-drag'),
                        'dragleave', drag_leave)
-    add_event_listener(js.document.getElementById('target'),
+    add_event_listener(js.document.getElementById('div-drag'),
                        'drop', pdf_merge.drop_files)
 
 

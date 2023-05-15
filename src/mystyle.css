@@ -199,17 +199,19 @@ input[type="file"] {
   background-color: linen;
   align-items: center;
   height: 80vh;
-  padding: 5vh 0;
+  padding: 5vh;
 }
 
 .canvas div {
-  padding: 0.25vh;
-  margin: 0.5vh;
-  width: 60%;
-  height: 4%;
+  padding: 1vh;
+  margin: 1vh;
+  width: 15vh;
+  height: 20vh;
   border: 1px solid crimson;
   border-radius: 1vh;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: 1.5vh;
 }
 
@@ -230,6 +232,13 @@ input[type="file"] {
   color: crimson;
 }
 
+.files {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  overflow: scroll;
+}
+
 .controls {
   display: flex;
   background-color: linen;
@@ -237,6 +246,7 @@ input[type="file"] {
   flex-direction: row;
   justify-content: center;
   gap: 3vh;
+  padding: 3vh;
 }
 
 .action {
@@ -293,8 +303,16 @@ input[type="file"] {
   color: crimson;
 }
 
-.dragging {
-  box-shadow: inset 4vw 4vh 24vw 36vh darkgray;
+.drag {
+  display: none;
+  position: absolute;
+  top: 6%;
+  height: 94%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(220, 20, 60, 0.4);
+  color: crimson;
 }
 
 @media (max-width: 1000px) {
