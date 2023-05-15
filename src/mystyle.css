@@ -315,6 +315,15 @@ input[type="file"] {
   color: crimson;
 }
 
+.tooltip {
+  position: absolute;
+  background-color: black;
+  color: white;
+  padding: 1vh;
+  font-size: 1vh;
+  border-radius: 1vh;
+}
+
 @media (max-width: 1000px) {
   .navbar {
     justify-content: space-between;

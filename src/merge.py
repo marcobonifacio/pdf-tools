@@ -7,6 +7,14 @@ from pyodide.ffi.wrappers import add_event_listener, create_proxy
 from pypdf import PdfWriter
 
 
+def vw2px(vw):
+    return vw * js.window.innerWidth / 100
+
+
+def vh2px(vh):
+    return vh * js.window.innerHeight / 100
+
+
 def show_menu():
     navbar = js.document.getElementById('top-menu')
     if navbar.className == 'menu':
@@ -32,11 +40,14 @@ def drag_leave(evt):
 
 
 def show_tooltip(evt):
+    coords = evt.target.getBoundingClientRect()
+    x = coords.left + vw2px(1)
+    y = coords.top + vh2px(3)
     tt = js.document.createElement('div')
     tt.id = 'tooltip'
-    tt.style.position = 'absolute'
-    tt.style.top = f'{evt.pageY}px'
-    tt.style.left = f'{evt.pageX}px'
+    tt.classList.add('tooltip')
+    tt.style.top = f'{y}px'
+    tt.style.left = f'{x}px'
     tt.innerHTML = evt.target.innerHTML
     js.document.body.appendChild(tt)
 
@@ -77,6 +88,24 @@ def modify_canvas_again():
     js.document.getElementById('target').appendChild(link)
     add_event_listener(js.document.getElementById('pdf-download'),
                        'click', pdf_merge.download_merged)
+                       
+
+def create_div(f):
+    el = js.document.createElement('div')
+    el.innerHTML = f.name
+    el.classList.add('pdf')
+    el.setAttribute('draggable', True)
+    js.document.getElementById('target').appendChild(el)
+    add_event_listener(el, 'mouseenter', show_tooltip)
+    add_event_listener(el, 'mouseleave', hide_tooltip)
+    return el
+
+
+def merge_enabler(files):
+    if len(files) < 2:
+        (js.document.getElementById('action-button').setAttribute('disabled', True))
+    else:
+        (js.document.getElementById('action-button').removeAttribute('disabled'))
 
 
 class PdfMerge:
@@ -94,19 +123,9 @@ class PdfMerge:
         filelist = evt.target.files
         for f in filelist:
             self.files.append(f)
-            el = js.document.createElement('div')
-            el.innerHTML = f.name
-            el.classList.add('pdf')
-            js.document.getElementById('target').appendChild(el)
-            add_event_listener(el, 'mouseenter', show_tooltip)
-            add_event_listener(el, 'mouseleave', hide_tooltip)
+            el = create_div(f)
         evt.target.value = ''
-        if len(self.files) < 2:
-            (js.document.getElementById('action-button').
-             setAttribute('disabled', True))
-        else:
-            (js.document.getElementById('action-button').
-             removeAttribute('disabled'))
+        merge_enabler(self.files)
     
     def drop_files(self, evt):
         js.document.getElementById('div-drag').style.display = 'none'
@@ -117,16 +136,8 @@ class PdfMerge:
             if i.kind == 'file':
                 f = i.getAsFile()
                 self.files.append(f)
-                el = js.document.createElement('div')
-                el.innerHTML = f.name
-                el.classList.add('pdf')
-                js.document.getElementById('target').appendChild(el)
-        if len(self.files) < 2:
-            (js.document.getElementById('action-button').
-             setAttribute('disabled', True))
-        else:
-            (js.document.getElementById('action-button').
-             removeAttribute('disabled'))
+                el = create_div(f)
+        merge_enabler(self.files)
     
     def read_files(self):
         for f in self.files:
