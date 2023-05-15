@@ -88,7 +88,15 @@ def modify_canvas_again():
     js.document.getElementById('target').appendChild(link)
     add_event_listener(js.document.getElementById('pdf-download'),
                        'click', pdf_merge.download_merged)
-                       
+
+
+def drag_div(evt):
+    pass
+
+
+def drop_div(evt):
+    pass
+
 
 def create_div(f):
     el = js.document.createElement('div')
@@ -98,6 +106,10 @@ def create_div(f):
     js.document.getElementById('target').appendChild(el)
     add_event_listener(el, 'mouseenter', show_tooltip)
     add_event_listener(el, 'mouseleave', hide_tooltip)
+    add_event_listener(el, 'touchmove',
+      drag_div)
+    add_event_listener(el, 'touchend',
+      drop_div)
     return el
 
 
@@ -106,6 +118,11 @@ def merge_enabler(files):
         (js.document.getElementById('action-button').setAttribute('disabled', True))
     else:
         (js.document.getElementById('action-button').removeAttribute('disabled'))
+
+
+class PdfDiv:
+
+    pass
 
 
 class PdfMerge:
