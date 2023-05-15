@@ -29,11 +29,11 @@ def modify_canvas():
     js.document.getElementById('title').style.display = 'none'
     js.document.getElementById('description').style.display = 'none'
     js.document.getElementById('dragndrop').style.display = 'none'
-    js.document.getElementById('selector').style.display = 'none'
+    js.document.getElementById('select-container').style.display = 'none'
     js.document.getElementById('action-button').style.visibility = 'visible'
-    js.document.getElementById('add-selector').style.visibility = 'visible'
+    js.document.getElementById('add-container').style.visibility = 'visible'
     add_event_listener(js.document.getElementById('add-selector'),
-                       'click', pdf_merge.select_files)
+                       'change', pdf_merge.select_files)
     add_event_listener(js.document.getElementById('action-button'),
                        'click', pdf_merge.merge_files)
 
@@ -65,19 +65,19 @@ class PdfMerge:
     def write_pdf(self, evt):
         self.merger.append(io.BytesIO(bytes(evt.target.result.to_py())))
         
-    async def select_files(self, evt):
+    def select_files(self, evt):
         if evt.target.id == 'selector':
             modify_canvas()
-        filelist = await js.window.showOpenFilePicker(multiple=True)
+        filelist = evt.target.files
         for f in filelist:
-            self.files.append(f.getFile())
+            self.files.append(f)
             Element('target').write(f.name, append=True)
         if len(self.files) < 2:
             (js.document.getElementById('action-button').
              setAttribute('disabled', True))
         else:
             (js.document.getElementById('action-button').
-             setAttribute('enabled', True))
+             removeAttribute('disabled'))
     
     def drop_files(self, evt):
         js.document.getElementById('target').classList.remove('dragging')
@@ -94,7 +94,7 @@ class PdfMerge:
              setAttribute('disabled', True))
         else:
             (js.document.getElementById('action-button').
-             setAttribute('enabled', True))
+             removeAttribute('disabled'))
     
     def read_files(self):
         for f in self.files:
@@ -120,7 +120,7 @@ class PdfMerge:
 
 def setup():
     add_event_listener(js.document.getElementById('selector'),
-                       'click', pdf_merge.select_files)
+                       'change', pdf_merge.select_files)
     add_event_listener(js.document.getElementById('target'),
                        'dragenter', drag_enter)
     add_event_listener(js.document.getElementById('target'),

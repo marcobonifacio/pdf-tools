@@ -224,6 +224,12 @@ input[type="file"] {
   font-size: 2vh;
 }
 
+.canvas a:hover {
+  cursor: pointer;
+  box-shadow: 0 0.2vh 0.8vh darkgray;
+  color: crimson;
+}
+
 .controls {
   display: flex;
   background-color: linen;
@@ -245,11 +251,11 @@ input[type="file"] {
   visibility: hidden;
 }
 
-.action[enabled] {
+.action:not([disabled]) {
   color: black;
 }
 
-.action[enabled]:hover, .add:hover {
+.action:not([disabled]):hover, .add:hover {
   cursor: pointer;
   box-shadow: 0 0.2vh 0.8vh darkgray;
   color: crimson;
@@ -265,6 +271,7 @@ input[type="file"] {
   text-align: center;
   font-weight: bold;
   visibility: hidden;
+  padding: 0.7vh;
 }
 
 .select {
@@ -277,6 +284,7 @@ input[type="file"] {
   text-align: center;
   font-weight: bold;
   font-size: 2vh;
+  padding: 3.5vh;
 }
 
 .select:hover {
