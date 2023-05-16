@@ -25,12 +25,15 @@ def show_menu():
 
 def drag_enter(evt):
     evt.preventDefault()
-    js.document.getElementById('div-drag').style.display = 'flex'
+    js.console.log(evt.dataTransfer.types)
+    if 'Files' in evt.dataTransfer.types:
+        js.document.getElementById('div-drag').style.display = 'flex'
 
 
 def drag_over(evt):
     evt.preventDefault()
-    if js.document.getElementById('div-drag').style.display == 'none':
+    if ('Files' in evt.dataTransfer.types and 
+        js.document.getElementById('div-drag').style.display == 'none'):
         js.document.getElementById('div-drag').style.display = 'flex'
 
 
@@ -98,21 +101,6 @@ def drop_div(evt):
     pass
 
 
-def create_div(f):
-    el = js.document.createElement('div')
-    el.innerHTML = f.name
-    el.classList.add('pdf')
-    el.setAttribute('draggable', True)
-    js.document.getElementById('target').appendChild(el)
-    add_event_listener(el, 'mouseenter', show_tooltip)
-    add_event_listener(el, 'mouseleave', hide_tooltip)
-    add_event_listener(el, 'touchmove',
-      drag_div)
-    add_event_listener(el, 'touchend',
-      drop_div)
-    return el
-
-
 def merge_enabler(files):
     if len(files) < 2:
         (js.document.getElementById('action-button').setAttribute('disabled', True))
@@ -120,9 +108,42 @@ def merge_enabler(files):
         (js.document.getElementById('action-button').removeAttribute('disabled'))
 
 
+class Div:
+
+    def __init__(self, order):
+        self.order = order
+        self.div = self.create_div()
+    
+    def create_div(self):
+        el = js.document.createElement('div')
+        el.classList.add('pdf-div')
+        line = js.document.createElement('hr')
+        line.setAttribute('color', 'crimson')
+        line.setAttribute('size', 3)
+        line.setAttribute('width', '100%')
+        el.appendChild(line)
+        js.document.getElementById('target').appendChild(el)
+        return el
+
+
 class PdfDiv:
 
-    pass
+    def __init__(self, f, order):
+        self.file = f
+        self.order = order
+        self.div = self.create_div()
+    
+    def create_div(self):
+        el = js.document.createElement('div')
+        el.innerHTML = self.file.name
+        el.classList.add('pdf')
+        el.setAttribute('draggable', True)
+        js.document.getElementById('target').appendChild(el)
+        add_event_listener(el, 'mouseenter', show_tooltip)
+        add_event_listener(el, 'mouseleave', hide_tooltip)
+        add_event_listener(el, 'touchmove', drag_div)
+        add_event_listener(el, 'touchend', drop_div)
+        return el
 
 
 class PdfMerge:
@@ -130,6 +151,7 @@ class PdfMerge:
     def __init__(self):
         self.files = []
         self.merger = PdfWriter()
+        self.order = 0
     
     def write_pdf(self, evt):
         self.merger.append(io.BytesIO(bytes(evt.target.result.to_py())))
@@ -137,10 +159,15 @@ class PdfMerge:
     def select_files(self, evt):
         if evt.target.id == 'selector':
             modify_canvas()
+            Div(self.order)
         filelist = evt.target.files
         for f in filelist:
-            self.files.append(f)
-            el = create_div(f)
+            el = PdfDiv(f, self.order)
+            self.files.append(el)
+            Div(self.order)
+            if len(self.files) % 3 == 0:
+                Div(self.order)
+            self.order += 1
         evt.target.value = ''
         merge_enabler(self.files)
     
@@ -149,15 +176,20 @@ class PdfMerge:
         evt.preventDefault()
         if len(self.files) == 0:
             modify_canvas()
+            Div(self.order)
         for i in evt.dataTransfer.items:
             if i.kind == 'file':
                 f = i.getAsFile()
-                self.files.append(f)
-                el = create_div(f)
+                el = PdfDiv(f, self.order)
+                self.files.append(el)
+                Div(self.order)
+                if len(self.files) % 3 == 0:
+                    Div(self.order)
+                self.order += 1
         merge_enabler(self.files)
     
     def read_files(self):
-        for f in self.files:
+        for f in [el.file for el in self.files]:
             reader = js.FileReader.new()
             reader.onload = create_proxy(self.write_pdf)
             reader.readAsArrayBuffer(f)
