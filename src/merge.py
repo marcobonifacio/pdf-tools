@@ -178,9 +178,8 @@ class PdfMerge:
     def select_files(self, evt):
         if evt.target.id == 'selector':
             modify_canvas()
-            Div(self.order)
-        filelist = evt.target.files
-        for f in filelist:
+            create_dropdiv()
+        for f in evt.target.files:
             create_div(f)
             self.files.append(f)
             create_dropdiv()
@@ -195,7 +194,7 @@ class PdfMerge:
         evt.preventDefault()
         if len(self.files) == 0:
             modify_canvas()
-            Div(self.order)
+            create_dropdiv()
         for i in evt.dataTransfer.items:
             if i.kind == 'file':
                 f = i.getAsFile()
