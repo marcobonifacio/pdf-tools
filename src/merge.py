@@ -155,7 +155,7 @@ def create_dropdiv():
 def create_div(f):
     el = js.document.createElement('div')
     el.innerHTML = f.name
-    el.innerHTML += f'<p style="font-size:4vh;color:gray;">{str(merge_pdf.order)}</p>'
+    el.innerHTML += f'<p style="font-size:4vh;color:gray;">{str(pdf_merge.order)}</p>'
     el.classList.add('pdf')
     el.setAttribute('draggable', True)
     js.document.getElementById('target').appendChild(el)
@@ -250,6 +250,8 @@ class PdfMerge:
             self.files.insert(index, self.files[self.index])
             del self.files[self.index]
         for d, f in zip(js.document.querySelectorAll("div.pdf"), self.files):
+            js.console.log(d.innerHTML)
+            js.console.log(f.name)
             d.innerHTML.replace(d.innerHTML.split('<p style:"')[0], f.name)
 
     
