@@ -219,6 +219,7 @@ input[type="file"] {
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 1.5vh;
+  cursor: grab;
 }
 
 .pdf-div {
@@ -229,7 +230,11 @@ input[type="file"] {
   margin: 0;
   width: 15vh;
   height: 2.5%;
+}
+
+.pdf-div > hr {
   visibility: hidden;
+  pointer-events: none;
 }
 
 .canvas a {
@@ -340,6 +345,11 @@ input[type="file"] {
   font-size: 1.5vh;
   border-radius: 1vh;
   pointer-events: none;
+}
+
+.draggable {
+  cursor: grabbing;
+  opacity: 0.4;
 }
 
 @media (max-width: 1000px) {

@@ -15,6 +15,26 @@ def vh2px(vh):
     return vh * js.window.innerHeight / 100
 
 
+def px2vw(px):
+    return px * 100 / js.window.innerWidth
+
+
+def px2vh(px):
+    return px * 100 / js.window.innerHeight
+
+
+def order_x(x):
+    return (round(px2vh(x)) - 6) / 17
+
+
+def order_y(x, offset):
+    return (round(px2vh(x)) - offset) / 22
+
+
+def order(x, y, offset):
+    return 3 * order_x(x) + order_y(y, offset)
+
+
 def show_menu():
     navbar = js.document.getElementById('top-menu')
     if navbar.className == 'menu':
@@ -25,7 +45,6 @@ def show_menu():
 
 def drag_enter(evt):
     evt.preventDefault()
-    js.console.log(evt.dataTransfer.types)
     if 'Files' in evt.dataTransfer.types:
         js.document.getElementById('div-drag').style.display = 'flex'
 
@@ -37,6 +56,10 @@ def drag_over(evt):
         js.document.getElementById('div-drag').style.display = 'flex'
 
 
+def drag_end(evt):
+    evt.target.classList.remove('draggable')
+
+
 def drag_leave(evt):
     evt.preventDefault()
     js.document.getElementById('div-drag').style.display = 'none'
@@ -44,20 +67,21 @@ def drag_leave(evt):
 
 def show_tooltip(evt):
     coords = evt.target.getBoundingClientRect()
-    x = coords.left + vw2px(1)
-    y = coords.top + vh2px(3)
+    x = coords.left + vw2px(3)
+    y = coords.top + vh2px(4)
     tt = js.document.createElement('div')
     tt.id = 'tooltip'
     tt.classList.add('tooltip')
     tt.style.top = f'{y}px'
     tt.style.left = f'{x}px'
-    tt.innerHTML = evt.target.innerHTML
+    tt.innerHTML = evt.target.innerHTML.split('<p style="')[0]
     js.document.body.appendChild(tt)
 
 
 def hide_tooltip(evt):
     tt = js.document.getElementById('tooltip')
-    js.document.body.removeChild(tt)
+    if tt in js.document.body.children:
+        js.document.body.removeChild(tt)
 
 
 def modify_canvas():
@@ -93,19 +117,25 @@ def modify_canvas_again():
                        'click', pdf_merge.download_merged)
 
 
-def drag_div(evt):
-    pass
+def enter_div(evt):
+    evt.preventDefault()
+    for c in evt.target.children:
+        c.style.visibility = 'visible'
 
 
-def drop_div(evt):
-    pass
+def leave_div(evt):
+    evt.preventDefault()
+    for c in evt.target.children:
+        c.style.visibility = 'hidden'
 
 
 def merge_enabler(files):
     if len(files) < 2:
-        (js.document.getElementById('action-button').setAttribute('disabled', True))
+        (js.document.getElementById('action-button'
+                                    ).setAttribute('disabled', True))
     else:
-        (js.document.getElementById('action-button').removeAttribute('disabled'))
+        (js.document.getElementById('action-button'
+                                    ).removeAttribute('disabled'))
 
 
 class Div:
@@ -117,12 +147,17 @@ class Div:
     def create_div(self):
         el = js.document.createElement('div')
         el.classList.add('pdf-div')
+        el.id = f'line{self.order}'
         line = js.document.createElement('hr')
         line.setAttribute('color', 'crimson')
         line.setAttribute('size', 3)
         line.setAttribute('width', '100%')
         el.appendChild(line)
         js.document.getElementById('target').appendChild(el)
+        add_event_listener(el, 'dragenter', enter_div)
+        add_event_listener(el, 'dragover', enter_div)
+        add_event_listener(el, 'dragleave', leave_div)
+        add_event_listener(el, 'drop', pdf_merge.drop_div)
         return el
 
 
@@ -133,16 +168,19 @@ class PdfDiv:
         self.order = order
         self.div = self.create_div()
     
+   
     def create_div(self):
         el = js.document.createElement('div')
         el.innerHTML = self.file.name
+        el.innerHTML += f'<p style="font-size:4vh;color:gray;">\
+            {str(self.order)}</p>'
         el.classList.add('pdf')
         el.setAttribute('draggable', True)
         js.document.getElementById('target').appendChild(el)
         add_event_listener(el, 'mouseenter', show_tooltip)
         add_event_listener(el, 'mouseleave', hide_tooltip)
-        add_event_listener(el, 'touchmove', drag_div)
-        add_event_listener(el, 'touchend', drop_div)
+        add_event_listener(el, 'dragstart', pdf_merge.drag_start)
+        add_event_listener(el, 'dragend', drag_end)
         return el
 
 
@@ -150,8 +188,9 @@ class PdfMerge:
 
     def __init__(self):
         self.files = []
+        self.divs = []
         self.merger = PdfWriter()
-        self.order = 0
+        self.order = 1
     
     def write_pdf(self, evt):
         self.merger.append(io.BytesIO(bytes(evt.target.result.to_py())))
@@ -208,6 +247,30 @@ class PdfMerge:
         blob_url = js.window.URL.createObjectURL(blob)
         link = js.document.getElementById('pdf-download')
         link.href = blob_url
+    
+    def drag_start(self, evt):
+        tt = js.document.getElementById('tooltip')
+        if tt in js.document.body.children:
+            js.document.body.removeChild(tt)
+        evt.target.classList.add('draggable')
+        evt.dataTransfer.effectAllowed = 'move'
+        self.index = int(order(evt.target.getBoundingClientRect().x,
+                               evt.target.getBoundingClientRect().y, 14))
+        
+    def drop_div(self, evt):
+        evt.preventDefault()
+        for c in evt.target.children:
+            c.style.visibility = 'hidden'
+        index = int(order(evt.target.getBoundingClientRect().x,
+                          evt.target.getBoundingClientRect().y, 12))
+        if self.index > index:
+            self.files.insert(index, self.files.pop(self.index))
+        elif self.index == index:
+            pass
+        else:
+            self.files.insert(index, self.files[self.index])
+            del self.files[self.index]
+
     
 
 def setup():
