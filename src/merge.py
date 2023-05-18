@@ -6,6 +6,11 @@ from pyodide.ffi import to_js
 from pyodide.ffi.wrappers import add_event_listener, create_proxy
 from pypdf import PdfWriter
 
+# TO DO:
+# - Add eraser (drop zone / button on div)
+# - Add back button
+# - Gestione errore PDF
+# - Supporto mobile
 
 def vw2px(vw):
     return vw * js.window.innerWidth / 100
@@ -35,6 +40,12 @@ def order(x, y, offset):
     return 3 * order_x(x) + order_y(y, offset)
 
 
+async def to_memview(f):
+    array = await f.arrayBuffer()
+    js.console.log(array)
+    return array.to_py()
+
+
 def show_menu():
     navbar = js.document.getElementById('top-menu')
     if navbar.className == 'menu':
@@ -45,7 +56,8 @@ def show_menu():
 
 def drag_enter(evt):
     evt.preventDefault()
-    if 'Files' in evt.dataTransfer.types:
+    if ('Files' in evt.dataTransfer.types and 'pdf-download' not in 
+        [child.id for child in js.document.getElementById('target').children]):
         js.document.getElementById('div-drag').style.display = 'flex'
 
 
@@ -74,7 +86,7 @@ def show_tooltip(evt):
     tt.classList.add('tooltip')
     tt.style.top = f'{y}px'
     tt.style.left = f'{x}px'
-    tt.innerHTML = evt.target.innerHTML.split('<p style="')[0]
+    tt.innerHTML = evt.target.firstChild.innerHTML
     js.document.body.appendChild(tt)
 
 
@@ -136,7 +148,19 @@ def merge_enabler(files):
     else:
         (js.document.getElementById('action-button'
                                     ).removeAttribute('disabled'))
-    
+
+
+def downloader(url):
+    id = 'hidden-downloader'
+    iframe = js.document.getElementById(id)
+    if not iframe:
+        iframe = js.document.createElement('iframe')
+        iframe.id = id
+        iframe.style.display = 'none'
+        js.document.body.appendChild(iframe)
+    iframe.src = url
+
+
 def create_dropdiv():
     el = js.document.createElement('div')
     el.classList.add('pdf-div')
@@ -154,8 +178,9 @@ def create_dropdiv():
   
 def create_div(f):
     el = js.document.createElement('div')
-    el.innerHTML = f.name
-    el.innerHTML += f'<p style="font-size:4vh;color:gray;">{str(pdf_merge.order)}</p>'
+    el.innerHTML = f'<span>{f.name}</span>'
+    el.innerHTML += f'<p style="font-size:4vh;color:gray;">\
+        {str(pdf_merge.order)}</p>'
     el.classList.add('pdf')
     el.setAttribute('draggable', True)
     js.document.getElementById('target').appendChild(el)
@@ -171,10 +196,8 @@ class PdfMerge:
         self.files = []
         self.merger = PdfWriter()
         self.order = 1
+        self.blob = None
     
-    def write_pdf(self, evt):
-        self.merger.append(io.BytesIO(bytes(evt.target.result.to_py())))
-        
     def select_files(self, evt):
         if evt.target.id == 'selector':
             modify_canvas()
@@ -206,26 +229,50 @@ class PdfMerge:
                 self.order += 1
         merge_enabler(self.files)
     
-    def read_files(self):
-        for f in self.files:
-            reader = js.FileReader.new()
-            reader.onload = create_proxy(self.write_pdf)
-            reader.readAsArrayBuffer(f)
+    async def read_files(self, f):
+        mv = await to_memview(f)
+        if str(bytes(mv)[:4]) == '%PDF':
+            self.merger.append(io.BytesIO(bytes(mv)))
+        else:
+            pass # Gestire errore
     
-    def merge_files(self, evt):
-        self.read_files()
-        modify_canvas_again()
-    
-    def download_merged(self, evt):
+    def write_file(self):
         output = io.BytesIO()
-        self.merger.write(output)
+        self.merger.write_stream(output)
         self.merger.close()
         output.seek(0)
-        content = to_js(output.read())
-        blob = js.Blob.new([content], {type: "application/pdf"})
-        blob_url = js.window.URL.createObjectURL(blob)
-        link = js.document.getElementById('pdf-download')
-        link.href = blob_url
+        js.console.log(to_js(output.read()).buffer)
+        self.blob = js.Blob.new([to_js(output.read()).buffer], 
+                           {type: "application/pdf"})
+        js.console.log(self.blob.text())
+       
+    
+    async def merge_files(self, evt):
+        js.document.body.style.cursor = 'wait'
+        evt.target.style.cursor = 'wait'
+        for f in self.files:
+            await self.read_files(f)
+        coro = asyncio.to_thread(self.write_file)
+        task = asyncio.create_task(coro)
+        await asyncio.sleep(0)
+        await task
+        js.document.body.style.cursor = 'default'
+        url = js.window.URL.createObjectURL(self.blob)
+        link = js.document.createElement('a')
+        link.setAttribute('href', url)
+        link.setAttribute('download', 'merged_pdf.pdf')
+        link.style.display = 'none'
+        js.document.body.appendChild(link)
+        link.click()
+        js.document.body.removeChild(link)
+        #js.window.location.reload()
+        #modify_canvas_again()
+    
+    def download_merged(self, evt):
+        blob_url = js.window.URL.createObjectURL(self.blob)
+        #link = js.document.getElementById('pdf-download')
+        #link.href = blob_url
+        downloader(blob_url)
     
     def drag_start(self, evt):
         tt = js.document.getElementById('tooltip')
@@ -250,11 +297,8 @@ class PdfMerge:
             self.files.insert(index, self.files[self.index])
             del self.files[self.index]
         for d, f in zip(js.document.querySelectorAll("div.pdf"), self.files):
-            js.console.log(d.innerHTML)
-            js.console.log(f.name)
-            d.innerHTML.replace(d.innerHTML.split('<p style:"')[0], f.name)
+            d.firstChild.innerHTML = f.name
 
-    
 
 def setup():
     add_event_listener(js.document.getElementById('selector'),
