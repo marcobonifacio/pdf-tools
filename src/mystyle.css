@@ -337,6 +337,21 @@ input[type="file"] {
   color: crimson;
 }
 
+.dustbin {
+  display: none;
+  position: absolute;
+  padding: 2%;
+  gap:2%;
+  left: 0%;
+  top: 85%;
+  height: 15%;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: rgba(220, 20, 60, 0.4);
+  color: crimson;
+}
+
 .tooltip {
   position: absolute;
   background-color: black;

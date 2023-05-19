@@ -7,10 +7,12 @@ from pyodide.ffi.wrappers import add_event_listener, create_proxy
 from pypdf import PdfWriter
 
 # TO DO:
-# - Add eraser (drop zone / button on div)
-# - Add back button
 # - Gestione errore PDF
 # - Supporto mobile
+
+
+# Utilities
+
 
 def vw2px(vw):
     return vw * js.window.innerWidth / 100
@@ -42,8 +44,10 @@ def order(x, y, offset):
 
 async def to_memview(f):
     array = await f.arrayBuffer()
-    js.console.log(array)
     return array.to_py()
+
+
+# Layout
 
 
 def show_menu():
@@ -54,46 +58,13 @@ def show_menu():
         navbar.className = 'menu'
 
 
-def drag_enter(evt):
-    evt.preventDefault()
-    if ('Files' in evt.dataTransfer.types and 'pdf-download' not in 
-        [child.id for child in js.document.getElementById('target').children]):
-        js.document.getElementById('div-drag').style.display = 'flex'
-
-
-def drag_over(evt):
-    evt.preventDefault()
-    if ('Files' in evt.dataTransfer.types and 
-        js.document.getElementById('div-drag').style.display == 'none'):
-        js.document.getElementById('div-drag').style.display = 'flex'
-
-
-def drag_end(evt):
-    evt.target.classList.remove('draggable')
-
-
-def drag_leave(evt):
-    evt.preventDefault()
-    js.document.getElementById('div-drag').style.display = 'none'
-
-
-def show_tooltip(evt):
-    coords = evt.target.getBoundingClientRect()
-    x = coords.left + vw2px(3)
-    y = coords.top + vh2px(4)
-    tt = js.document.createElement('div')
-    tt.id = 'tooltip'
-    tt.classList.add('tooltip')
-    tt.style.top = f'{y}px'
-    tt.style.left = f'{x}px'
-    tt.innerHTML = evt.target.firstChild.innerHTML
-    js.document.body.appendChild(tt)
-
-
-def hide_tooltip(evt):
-    tt = js.document.getElementById('tooltip')
-    if tt in js.document.body.children:
-        js.document.body.removeChild(tt)
+def merge_enabler(files):
+    if len(files) < 2:
+        (js.document.getElementById('action-button'
+                                    ).setAttribute('disabled', True))
+    else:
+        (js.document.getElementById('action-button'
+                                    ).removeAttribute('disabled'))
 
 
 def modify_canvas():
@@ -108,57 +79,6 @@ def modify_canvas():
                        'change', pdf_merge.select_files)
     add_event_listener(js.document.getElementById('action-button'),
                        'click', pdf_merge.merge_files)
-
-
-def modify_canvas_again():
-    for child in js.document.getElementById('target').children:
-        child.style.display = 'none'
-    js.document.getElementById('add-container').style.display = 'none'
-    js.document.getElementById('action-button').style.display = 'none'
-    js.document.getElementById('target').classList.remove('files')
-    p = js.document.createElement('p')
-    p.innerHTML = 'Your PDF file is ready to download!'
-    js.document.getElementById('target').appendChild(p)
-    link = js.document.createElement('a')
-    link.id = 'pdf-download'
-    link.innerHTML = 'Download PDF'
-    link.classList.add('merge')
-    link.setAttribute('download', 'merged_pdf.pdf')
-    js.document.getElementById('target').appendChild(link)
-    add_event_listener(js.document.getElementById('pdf-download'),
-                       'click', pdf_merge.download_merged)
-
-
-def enter_div(evt):
-    evt.preventDefault()
-    for c in evt.target.children:
-        c.style.visibility = 'visible'
-
-
-def leave_div(evt):
-    evt.preventDefault()
-    for c in evt.target.children:
-        c.style.visibility = 'hidden'
-
-
-def merge_enabler(files):
-    if len(files) < 2:
-        (js.document.getElementById('action-button'
-                                    ).setAttribute('disabled', True))
-    else:
-        (js.document.getElementById('action-button'
-                                    ).removeAttribute('disabled'))
-
-
-def downloader(url):
-    id = 'hidden-downloader'
-    iframe = js.document.getElementById(id)
-    if not iframe:
-        iframe = js.document.createElement('iframe')
-        iframe.id = id
-        iframe.style.display = 'none'
-        js.document.body.appendChild(iframe)
-    iframe.src = url
 
 
 def create_dropdiv():
@@ -190,24 +110,114 @@ def create_div(f):
     add_event_listener(el, 'dragend', drag_end)
 
 
+def setup():
+    add_event_listener(js.document.getElementById('selector'),
+                       'change', pdf_merge.select_files)
+    add_event_listener(js.document.getElementById('target'),
+                       'dragenter', drag_enter)
+    add_event_listener(js.document.getElementById('div-drag'),
+                       'dragover', drag_over)
+    add_event_listener(js.document.getElementById('div-drag'),
+                       'dragleave', drag_leave)
+    add_event_listener(js.document.getElementById('div-drag'),
+                       'drop', pdf_merge.drop_files)
+    add_event_listener(js.document.getElementById('bin'),
+                       'dragenter', do_nothing)
+    add_event_listener(js.document.getElementById('bin'),
+                       'dragover', do_nothing)
+    add_event_listener(js.document.getElementById('bin'),
+                       'dragleave', do_nothing)
+    add_event_listener(js.document.getElementById('bin'),
+                       'drop', pdf_merge.delete_file)
+
+
+# Callbacks
+
+
+def write_file(content, callback):
+    blob = js.Blob.new([content], {type: "application/pdf"})
+    callback(blob)
+
+
+# Events
+
+
+def drag_enter(evt):
+    evt.preventDefault()
+    if 'Files' in evt.dataTransfer.types:
+        js.document.getElementById('div-drag').style.display = 'flex'
+
+
+def drag_over(evt):
+    evt.preventDefault()
+    if ('Files' in evt.dataTransfer.types and 
+        js.document.getElementById('div-drag').style.display == 'none'):
+        js.document.getElementById('div-drag').style.display = 'flex'
+
+
+def drag_end(evt):
+    evt.target.classList.remove('draggable')
+    js.document.getElementById('bin').style.display = 'none'
+
+
+def drag_leave(evt):
+    evt.preventDefault()
+    js.document.getElementById('div-drag').style.display = 'none'
+
+
+def show_tooltip(evt):
+    coords = evt.target.getBoundingClientRect()
+    x = coords.left + vw2px(3)
+    y = coords.top + vh2px(4)
+    tt = js.document.createElement('div')
+    tt.id = 'tooltip'
+    tt.classList.add('tooltip')
+    tt.style.top = f'{y}px'
+    tt.style.left = f'{x}px'
+    tt.innerHTML = evt.target.firstChild.innerHTML
+    js.document.body.appendChild(tt)
+
+
+def hide_tooltip(evt):
+    tt = js.document.getElementById('tooltip')
+    if tt in js.document.body.children:
+        js.document.body.removeChild(tt)
+
+
+def enter_div(evt):
+    evt.preventDefault()
+    for c in evt.target.children:
+        c.style.visibility = 'visible'
+
+
+def do_nothing(evt):
+    evt.preventDefault()
+
+
+def leave_div(evt):
+    evt.preventDefault()
+    for c in evt.target.children:
+        c.style.visibility = 'hidden'
+
+
+# Class PdfMerge
+
 class PdfMerge:
 
     def __init__(self):
         self.files = []
         self.merger = PdfWriter()
         self.order = 1
-        self.blob = None
     
     def select_files(self, evt):
         if evt.target.id == 'selector':
             modify_canvas()
-            create_dropdiv()
         for f in evt.target.files:
+            if len(self.files) % 3 == 0:
+                create_dropdiv()
             create_div(f)
             self.files.append(f)
             create_dropdiv()
-            if len(self.files) % 3 == 0:
-                create_dropdiv()
             self.order += 1
         evt.target.value = ''
         merge_enabler(self.files)
@@ -217,47 +227,42 @@ class PdfMerge:
         evt.preventDefault()
         if len(self.files) == 0:
             modify_canvas()
-            create_dropdiv()
         for i in evt.dataTransfer.items:
             if i.kind == 'file':
+                if len(self.files) % 3 == 0:
+                    create_dropdiv()
                 f = i.getAsFile()
                 create_div(f)
                 self.files.append(f)
                 create_dropdiv()
-                if len(self.files) % 3 == 0:
-                    create_dropdiv()
                 self.order += 1
         merge_enabler(self.files)
     
     async def read_files(self, f):
         mv = await to_memview(f)
-        if str(bytes(mv)[:4]) == '%PDF':
+        if '%PDF' in str(bytes(mv)[:4]):
             self.merger.append(io.BytesIO(bytes(mv)))
         else:
             pass # Gestire errore
-    
-    def write_file(self):
-        output = io.BytesIO()
-        self.merger.write_stream(output)
-        self.merger.close()
-        output.seek(0)
-        js.console.log(to_js(output.read()).buffer)
-        self.blob = js.Blob.new([to_js(output.read()).buffer], 
-                           {type: "application/pdf"})
-        js.console.log(self.blob.text())
-       
     
     async def merge_files(self, evt):
         js.document.body.style.cursor = 'wait'
         evt.target.style.cursor = 'wait'
         for f in self.files:
             await self.read_files(f)
-        coro = asyncio.to_thread(self.write_file)
-        task = asyncio.create_task(coro)
-        await asyncio.sleep(0)
-        await task
+        self.write_merged(write_file)
+    
+    def write_merged(self, callback):
+        with io.BytesIO() as output:
+            self.merger.write(output)
+            self.merger.close()
+            output.seek(0)
+            content = to_js(output.read())
+        callback(content, self.download_file)
+    
+    def download_file(self, blob):
         js.document.body.style.cursor = 'default'
-        url = js.window.URL.createObjectURL(self.blob)
+        url = js.window.URL.createObjectURL(blob)
         link = js.document.createElement('a')
         link.setAttribute('href', url)
         link.setAttribute('download', 'merged_pdf.pdf')
@@ -265,19 +270,13 @@ class PdfMerge:
         js.document.body.appendChild(link)
         link.click()
         js.document.body.removeChild(link)
-        #js.window.location.reload()
-        #modify_canvas_again()
-    
-    def download_merged(self, evt):
-        blob_url = js.window.URL.createObjectURL(self.blob)
-        #link = js.document.getElementById('pdf-download')
-        #link.href = blob_url
-        downloader(blob_url)
+        js.window.location.reload()
     
     def drag_start(self, evt):
         tt = js.document.getElementById('tooltip')
         if tt in js.document.body.children:
             js.document.body.removeChild(tt)
+        js.document.getElementById('bin').style.display = 'flex'
         evt.target.classList.add('draggable')
         evt.dataTransfer.effectAllowed = 'move'
         self.index = int(order(evt.target.getBoundingClientRect().x,
@@ -300,18 +299,18 @@ class PdfMerge:
             d.firstChild.innerHTML = f.name
 
 
-def setup():
-    add_event_listener(js.document.getElementById('selector'),
-                       'change', pdf_merge.select_files)
-    add_event_listener(js.document.getElementById('target'),
-                       'dragenter', drag_enter)
-    add_event_listener(js.document.getElementById('div-drag'),
-                       'dragover', drag_over)
-    add_event_listener(js.document.getElementById('div-drag'),
-                       'dragleave', drag_leave)
-    add_event_listener(js.document.getElementById('div-drag'),
-                       'drop', pdf_merge.drop_files)
+    def delete_file(self, evt):
+        evt.preventDefault()
+        del self.files[self.index]
+        divs = js.document.querySelectorAll("div.pdf")
+        divs[self.index].style.display = 'none'
+        merge_enabler(self.files)
+            
+
+
+# Main routine
 
 
 pdf_merge = PdfMerge()
 setup()
+    
