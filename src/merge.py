@@ -302,9 +302,15 @@ class PdfMerge:
     def delete_file(self, evt):
         evt.preventDefault()
         del self.files[self.index]
-        divs = js.document.querySelectorAll("div.pdf")
-        divs[self.index].style.display = 'none'
-        merge_enabler(self.files)
+        js.document.getElementById('target').innerHTML = ''
+        self.order = 1
+        for n, f in enumerate(self.files):
+            if n % 3 == 0:
+                create_dropdiv()
+            create_div(f)
+            create_dropdiv()
+            self.order += 1
+        merge_enabler
             
 
 

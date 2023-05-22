@@ -377,13 +377,16 @@ input[type="file"] {
   }
   .menu > i {
     display: block;
+    position: fixed;
+    top: 3vh;
+    right: 3vw;
     z-index: 2;
   }
   .menu.responsive {
     flex-direction: column;
-    position: relative;
-    top: 0;
-    right: 0;
+    position: absolute;
+    top: 3vh;
+    right: 3vw;
     width: 15vh;
     align-items: flex-end;
     justify-content: flex-end;
@@ -399,6 +402,11 @@ input[type="file"] {
   }
   .menu.responsive > a:nth-child(2) {
     padding: 2vh 3vw 0.25vw 3vw;
+  }
+  .menu.responsive > i {
+    position: fixed;
+    top: 3vh;
+    right: 3vw;
   }
   .main {
     width: 50vw;
