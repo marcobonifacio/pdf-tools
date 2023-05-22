@@ -46,12 +46,16 @@ input[type="file"] {
   opacity: 0;
 }
 
+#add-selector {
+  width: 100%;
+}
+
 .navbar {
   display: flex;
   flex-direction: row;
   align-items: baseline;
   padding: 0.5vh 3vw;
-  height: 6vh;
+  height: 6%;
 }
 
 .menu {
@@ -199,24 +203,44 @@ input[type="file"] {
   background-color: linen;
   align-items: center;
   height: 80vh;
-  padding: 5vh 0;
+  width: 100%;
+  padding: 5vh;
+  overflow: auto;
 }
 
-.canvas div {
-  padding: 0.25vh;
-  margin: 0.5vh;
-  width: 60%;
-  height: 4%;
+.pdf {
+  padding: 1vh;
+  margin: 0 1vh;
+  width: 15vh;
+  height: 30%;
   border: 1px solid crimson;
   border-radius: 1vh;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: 1.5vh;
+  cursor: grab;
+}
+
+.pdf-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  width: 15vh;
+  height: 2.5%;
+}
+
+.pdf-div > hr {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .canvas a {
   margin: 5vh;
   padding: 2vh;
-  width: 40%;
+  width: 35%;
   height: 10%;
   border-radius: 1vh;
   text-align: center;
@@ -230,6 +254,13 @@ input[type="file"] {
   color: crimson;
 }
 
+.files {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  overflow: scroll;
+}
+
 .controls {
   display: flex;
   background-color: linen;
@@ -237,6 +268,7 @@ input[type="file"] {
   flex-direction: row;
   justify-content: center;
   gap: 3vh;
+  padding: 3vh;
 }
 
 .action {
@@ -293,8 +325,46 @@ input[type="file"] {
   color: crimson;
 }
 
-.dragging {
-  box-shadow: inset 4vw 4vh 24vw 36vh darkgray;
+.drag {
+  display: none;
+  position: absolute;
+  top: 6%;
+  height: 94%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(220, 20, 60, 0.4);
+  color: crimson;
+}
+
+.dustbin {
+  display: none;
+  position: absolute;
+  padding: 2%;
+  gap:2%;
+  left: 0%;
+  top: 85%;
+  height: 15%;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: rgba(220, 20, 60, 0.4);
+  color: crimson;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: black;
+  color: white;
+  padding: 1vh;
+  font-size: 1.5vh;
+  border-radius: 1vh;
+  pointer-events: none;
+}
+
+.draggable {
+  cursor: grabbing;
+  opacity: 0.4;
 }
 
 @media (max-width: 1000px) {
@@ -307,13 +377,16 @@ input[type="file"] {
   }
   .menu > i {
     display: block;
+    position: fixed;
+    top: 3vh;
+    right: 3vw;
     z-index: 2;
   }
   .menu.responsive {
     flex-direction: column;
-    position: relative;
-    top: 0;
-    right: 0;
+    position: absolute;
+    top: 3vh;
+    right: 3vw;
     width: 15vh;
     align-items: flex-end;
     justify-content: flex-end;
@@ -329,6 +402,11 @@ input[type="file"] {
   }
   .menu.responsive > a:nth-child(2) {
     padding: 2vh 3vw 0.25vw 3vw;
+  }
+  .menu.responsive > i {
+    position: fixed;
+    top: 3vh;
+    right: 3vw;
   }
   .main {
     width: 50vw;

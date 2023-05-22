@@ -28,7 +28,7 @@
     </div>
     <div class="canvas" id="target">
       <h2 id="title">Merge PDF files</h2>
-      <p id="description">Merge two or more PDF files in any order</p>
+      <p id="description">Upload, reorder and merge two or more PDF files.</p>
       <label for="selector" class="select merge" id="select-container">Select PDF files
         <input type="file" id="selector" accept=".pdf" multiple />
       </label>
@@ -47,6 +47,13 @@
         <a href="https://pypdf.readthedocs.io/en/latest/">pypdf</a>
       </p>
       <div id="templink"></div>
+    </div>
+    <div class="drag" id="div-drag">
+      <h2>Drop here to upload!</h2>
+    </div>
+    <div class="dustbin" id="bin">
+      <i class="fa-regular fa-trash-can fa-2xl"></i>
+      <h2>Drop here to discard!</h2>
     </div>
     <py-script src="src/merge.py" />
     <py-config src="src/pyscript.toml" />
